@@ -1,13 +1,11 @@
-
-import 'package:flutter/material.dart';
-import '../api/firebase_todo_api.dart';
-import '../models/todo_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import '../models/todo_model.dart';
+import '../api/firebase_todo_api.dart';
 
 class TodoListProvider with ChangeNotifier {
   late FirebaseTodoAPI firebaseService;
-  late Stream<QuerySnapshot> _todosStream;
-  Todo? _selectedTodo;
+  late Stream<QuerySnapshot> _todoStream;
 
   TodoListProvider() {
     firebaseService = FirebaseTodoAPI();
@@ -15,39 +13,34 @@ class TodoListProvider with ChangeNotifier {
   }
 
   // getter
-  Stream<QuerySnapshot> get todos => _todosStream;
-  Todo get selected => _selectedTodo!;
+  Stream<QuerySnapshot> get todos => _todoStream;
 
-  changeSelectedTodo(Todo item) {
-    _selectedTodo = item;
-  }
-
-  void fetchTodos() {
-    _todosStream = firebaseService.getAllTodos();
+  fetchTodos() {
+    _todoStream = firebaseService.getAllTodos();
     notifyListeners();
   }
 
   void addTodo(Todo item) async {
     String message = await firebaseService.addTodo(item.toJson(item));
     print(message);
+
     notifyListeners();
   }
 
-  void editTodo(int index, String newTitle) {
-    // _todoList[index].title = newTitle;
-    print("Edit");
-    notifyListeners();
-  }
-
-  void deleteTodo() async {
-    String message = await firebaseService.deleteTodo(_selectedTodo!.id);
+  void editTodo(String id, String newTitle) async {
+    String message = await firebaseService.editTodo(id, newTitle);
     print(message);
     notifyListeners();
   }
 
-  void toggleStatus(int index, bool status) {
-    // _todoList[index].completed = status;
-    print("Toggle Status");
+  void deleteTodo(String id) async {
+    String message = await firebaseService.deleteTodo(id);
+    print(message);
+    notifyListeners();
+  }
+
+  void toggleStatus(String id, bool status) async {
+    String message = await firebaseService.toggleStatus(id, status);
     notifyListeners();
   }
 }

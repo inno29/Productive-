@@ -22,7 +22,7 @@ class _TodoPageState extends State<TodoPage> {
     // access the list of todos in the provider
     Stream<QuerySnapshot> todosStream = context.watch<TodoListProvider>().todos;
     Stream<User?> userStream = context.watch<AuthProvider>().uStream;
-     return StreamBuilder(
+    return StreamBuilder(
         stream: userStream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -40,36 +40,16 @@ class _TodoPageState extends State<TodoPage> {
           // if user is logged in, display the scaffold containing the streambuilder for the todos
           return displayScaffold(context, todosStream);
         });
-
   }
 
   Scaffold displayScaffold(
       BuildContext context, Stream<QuerySnapshot<Object?>> todosStream) {
+    // access the list of todos in the provider
     return Scaffold(
-      drawer: Drawer(
-          child: ListView(padding: EdgeInsets.zero, children: [
-        ListTile(
-          title: const Text('Details'),
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const UserDetailsPage()));
-          },
-        ),
-        ListTile(
-          title: const Text('Logout'),
-          onTap: () {
-            context.read<AuthProvider>().signOut();
-            Navigator.pop(context);
-          },
-        ),
-      ])),
       appBar: AppBar(
         title: Text("Todo"),
       ),
       body: StreamBuilder(
-        
         stream: todosStream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -91,11 +71,11 @@ class _TodoPageState extends State<TodoPage> {
             itemBuilder: ((context, index) {
               Todo todo = Todo.fromJson(
                   snapshot.data?.docs[index].data() as Map<String, dynamic>);
+              todo.id = snapshot.data?.docs[index].id;
               return Dismissible(
                 key: Key(todo.id.toString()),
                 onDismissed: (direction) {
-                  context.read<TodoListProvider>().changeSelectedTodo(todo);
-                  context.read<TodoListProvider>().deleteTodo();
+                  context.read<TodoListProvider>().deleteTodo(todo.id!);
 
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('${todo.title} dismissed')));
@@ -111,7 +91,7 @@ class _TodoPageState extends State<TodoPage> {
                     onChanged: (bool? value) {
                       context
                           .read<TodoListProvider>()
-                          .toggleStatus(index, value!);
+                          .toggleStatus(todo.id!, value!);
                     },
                   ),
                   trailing: Row(
@@ -119,26 +99,22 @@ class _TodoPageState extends State<TodoPage> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (BuildContext context) => TodoModal(
-                          //     type: 'Edit',
-                          //     todoIndex: index,
-                          //   ),
-                          // );
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => TodoModal(
+                              type: 'Edit',
+                              item: todo,
+                            ),
+                          );
                         },
                         icon: const Icon(Icons.create_outlined),
                       ),
                       IconButton(
                         onPressed: () {
-                          context
-                              .read<TodoListProvider>()
-                              .changeSelectedTodo(todo);
                           showDialog(
                             context: context,
-                            builder: (BuildContext context) => TodoModal(
-                              type: 'Delete',
-                            ),
+                            builder: (BuildContext context) =>
+                                TodoModal(type: 'Delete', item: todo),
                           );
                         },
                         icon: const Icon(Icons.delete_outlined),

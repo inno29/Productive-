@@ -8,7 +8,6 @@ import '../screens/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -21,7 +20,7 @@ void main() async {
         ChangeNotifierProvider(create: ((context) => TodoListProvider())),
         ChangeNotifierProvider(create: ((context) => AuthProvider())),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -41,12 +40,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const TodoPage(),
         '/login': (context) => const LoginPage(),
-        '/todo': (context) => const LoginPage(),
+        '/todo': (context) => const TodoPage(),
         '/user_details': (context) => const UserDetailsPage(),
-        
       },
     );
   }
 }
-
-

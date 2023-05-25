@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
+
 class FirebaseAuthAPI {
   static final FirebaseAuth auth = FirebaseAuth.instance;
   static final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -17,7 +18,7 @@ class FirebaseAuthAPI {
 
       //let's print the object returned by signInWithEmailAndPassword
       //you can use this object to get the user's id, email, etc.
-      print(credential);
+      //print(credential);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         //possible to return something more useful
@@ -57,7 +58,7 @@ class FirebaseAuthAPI {
     await auth.signOut();
   }
 
-   Future<String> addUser(myUser user) async {
+  Future<String> addUser(myUser user) async {
     final userJson = user.toJson(user);
     try {
       final docRef = await db.collection("users").add(userJson);
