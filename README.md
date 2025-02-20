@@ -1,6 +1,6 @@
 # Simple Task Organizer using Firebase
 
-The todo app connects to firebase cloud firestore and authentication. It uses a provider for state management
+productive connects to firebase cloud firestore and authentication. It uses a provider for state management
 
 ## Folder Structure
 ```
